@@ -12,6 +12,7 @@ import OrderStepTransition from './OrderStepTransition'
 function OrderStep3() {
   const [order, setOrder] = useOutletContext()
   const [isShowRate, setIsShowRate] = useState(false)
+  const [carrier,setCarrier]=useState("")
 
   const [deliveryDetail, setDeliveryDetail] = useState()
   const setRateID = useRateStore(state => state.setRateID)
@@ -205,7 +206,12 @@ function OrderStep3() {
                       key={service}
                       htmlFor='radio-ups'
                       className='col-span-5 flex gap-[12px] items-center w-full h-[40px] bg-input-bg  text-[#C3C3C3] rounded-[8px] text-xs font-normal cursor-pointer'
-                      onClick={() => setShippingSpeed(service)}
+                      onClick={() => {
+                        console.log("service")
+                        console.log(service?.split(' ')[0])
+                        setShippingSpeed(service)
+                        setCarrier(service?.split(' ')[0])
+                      }}
                     >
                       <input
                         type='radio'
@@ -326,7 +332,7 @@ function OrderStep3() {
               </div>
               <div className='grid grid-cols-1 grid-rows-3 text-input-text font-normal gap-[12px]'>
               
-                <span>{order?.parcel?.weight || 1}</span>
+                <span>{carrier}</span>
                 <span>
                   {order?.parcel?.length || 1} x {order?.parcel?.width || 1} x{' '}
                   {order?.parcel?.height || 1}

@@ -7,9 +7,11 @@ import ConfirmationModal from '../../../components/ConfirmationModal'
 import api from '../../../lib/api'
 import { formatTime } from '../../../lib/utils'
 import useUserInfoStore from '../../../store/useUserInfoStore'
+import io from 'socket.io-client'
 
 function Conversation() {
   const { id } = useParams()
+  const socketRef=useRef()
   const chatRef = useRef(null)
   const user = useUserInfoStore(state => state.userInfo)
   const queryClient = useQueryClient()
@@ -43,6 +45,14 @@ function Conversation() {
         id: ticket._id,
         message
       })
+      let addmessage={
+        message,
+        sender:'user',
+        senderId:user.id,
+        ticketId:ticket._id,
+        _id:user._id
+      }
+      socketRef?.current?.emit('message',addmessage)
       setMessage('')
       await queryClient.invalidateQueries({
         queryKey: ['ticket', id]
@@ -84,6 +94,19 @@ function Conversation() {
   }, [])
 
   const ready = !isLoading && ticket
+  useEffect(() => {
+
+    // Initialize socket connection
+    socketRef.current = io('http://localhost:3000')
+    let connectiondata={
+      userId:user.id,
+  }
+  socketRef.current.emit('connected',connectiondata)
+  socketRef.current.on('message',(data)=>{
+    console.log("DATA")
+    console.log(data)
+  })
+  }, [])
 
   return (
     <div className='flex-grow bg-white min-h-[600px]  rounded-[17px] pt-[28px] pb-[22px] px-5 flex flex-col'>
@@ -152,7 +175,7 @@ function Conversation() {
                       )}
                       <div>
                         <div className='text-neutral-800 text-xs font-bold'>
-                          You
+                          {message?.sender=="admin"?"Admin":'User'}
                         </div>
                         <div className='text-input-text text-xs font-normal'>
                           {formatTime(message.sentAt)}

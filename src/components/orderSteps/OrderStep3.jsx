@@ -41,7 +41,7 @@ function OrderStep3() {
         country: order?.receiver?.country
       },
       details: {
-       
+        carrier: 'USPS',
         units: order?.parcel?.units,
         weight: Number(order?.parcel?.weight) || 1,
         length: Number(order?.parcel?.length) || 1,
@@ -53,6 +53,8 @@ function OrderStep3() {
     try {
       setLoading(true)
       const { data } = await api.post(`/rates/calculate`, payload)
+      console.log("DAATA")
+      console.log(data)
       setDeliveryDetail(data)
       setRateID(data.rateID)
       setServices(Object.keys(data.rates))

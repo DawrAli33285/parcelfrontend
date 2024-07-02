@@ -53,8 +53,7 @@ function OrderStep3() {
     try {
       setLoading(true)
       const { data } = await api.post(`/rates/calculate`, payload)
-      console.log("DAATA")
-      console.log(data)
+    
       setDeliveryDetail(data)
       setRateID(data.rateID)
       setServices(Object.keys(data.rates))
